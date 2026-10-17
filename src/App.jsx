@@ -238,17 +238,79 @@ function useCountdown(targetDate) {
 
 function App() {
   const countdown = useCountdown(WEDDING_TARGET_DATE)
+  const [isReady, setIsReady] = useState(false)
+  const [splashMounted, setSplashMounted] = useState(true)
+
+  useEffect(() => {
+    // Graceful invitation reveal: allows fonts, background, and initial styles to settle
+    const timer = setTimeout(() => {
+      setIsReady(true)
+      const unmountTimer = setTimeout(() => setSplashMounted(false), 750)
+      return () => clearTimeout(unmountTimer)
+    }, 1300)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
-    <div
-      className="animate-page-fade w-full max-w-[430px] min-h-screen mx-auto bg-card flex flex-col items-center shadow-2xl overflow-x-hidden px-6 pb-20 relative"
-      style={{
-        backgroundImage: "url('/bg.webp')",
-        backgroundRepeat: 'repeat-y',
-        backgroundSize: '100% auto',
-        backgroundPosition: 'top center',
-      }}
-    >
+    <>
+      {/* ── Luxury Royal Invitation Splash Screen ── */}
+      {splashMounted && (
+        <div
+          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#1d1715] transition-opacity duration-700 ease-out select-none ${
+            isReady ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+          }`}
+          style={{
+            backgroundImage:
+              'radial-gradient(ellipse at 50% 45%, rgba(107, 29, 47, 0.45) 0%, rgba(29, 23, 21, 0.98) 75%)',
+          }}
+        >
+          <div className="flex flex-col items-center text-center px-6">
+            {/* Glowing Royal Wax Seal */}
+            <div className="relative mb-5">
+              <div className="absolute inset-0 rounded-full bg-gold/25 blur-2xl animate-pulse" />
+              <img
+                src="/04_gold_wax_seal_top.webp"
+                alt="Royal Wedding Seal"
+                className="relative w-20 h-auto drop-shadow-2xl animate-gentle-pulse"
+              />
+            </div>
+
+            {/* Couple's Monogram Names */}
+            <h2 className="font-cormorant italic font-light text-[36px] sm:text-[40px] tracking-[0.16em] text-[#ede6d4] leading-snug">
+              Maida <span className="text-[0.75em] not-italic text-gold mx-2">&amp;</span> Usman
+            </h2>
+
+            {/* Delicate gold divider */}
+            <div className="flex items-center gap-2.5 my-3.5 w-28">
+              <div className="flex-1 h-px bg-gold/40" />
+              <div className="w-1.5 h-1.5 rounded-full bg-gold/90" />
+              <div className="flex-1 h-px bg-gold/40" />
+            </div>
+
+            {/* Luxury Invitation Subtitle */}
+            <p className="font-cormorant italic text-[13.5px] sm:text-[14px] text-[#ede6d4]/85 tracking-[0.24em] uppercase font-light">
+              Unfolding your invitation
+            </p>
+
+            {/* Shimmer progress indicator */}
+            <div className="w-36 h-[1.5px] bg-[#ede6d4]/15 rounded-full mt-6 overflow-hidden">
+              <div className="h-full w-full bg-gradient-to-r from-transparent via-gold to-transparent animate-shimmer-bar" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Main Invitation Page ── */}
+      <div
+        className="animate-page-fade w-full max-w-[430px] min-h-screen mx-auto bg-card flex flex-col items-center shadow-2xl overflow-x-hidden px-6 pb-20 relative"
+        style={{
+          backgroundImage: "url('/bg.webp')",
+          backgroundRepeat: 'repeat-y',
+          backgroundSize: '100% auto',
+          backgroundPosition: 'top center',
+        }}
+      >
 
       {/* ── Names Section ── */}
       <section className="flex flex-col items-center w-full mt-4 text-center">
@@ -892,6 +954,7 @@ function App() {
       </section>
 
     </div>
+    </>
   )
 }
 
