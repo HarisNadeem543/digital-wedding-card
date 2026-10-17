@@ -21,24 +21,35 @@ function MusicPlayer() {
   const [current, setCurrent] = useState(0)   // elapsed seconds
   const [duration, setDuration] = useState(0)   // total seconds
 
-  // ── Autoplay on mount (deferred to avoid blocking page load) ──────────────
+  // ── Smart Background Pre-buffering & Autoplay ──────────────────────────────
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
+
+    // Quietly pre-buffer the audio in the background after splash & initial images load
+    const bufferTimer = setTimeout(() => {
+      audio.preload = 'auto'
+      audio.load()
+    }, 1200)
+
     const tryPlay = () => {
       audio.play()
         .then(() => setIsPlaying(true))
-        .catch(() => {/* autoplay blocked — user must tap play */ })
+        .catch(() => {/* autoplay blocked — starts on user gesture */ })
     }
-    // Attempt playback on first user gesture to preserve bandwidth
+
+    // Attempt playback on first user gesture
     const handleFirstGesture = () => {
       tryPlay()
       window.removeEventListener('click', handleFirstGesture)
       window.removeEventListener('touchstart', handleFirstGesture)
     }
+
     window.addEventListener('click', handleFirstGesture, { once: true })
     window.addEventListener('touchstart', handleFirstGesture, { once: true })
+
     return () => {
+      clearTimeout(bufferTimer)
       window.removeEventListener('click', handleFirstGesture)
       window.removeEventListener('touchstart', handleFirstGesture)
     }
@@ -82,12 +93,12 @@ function MusicPlayer() {
   return (
     <div className="relative w-full flex flex-col items-center mt-10">
 
-      {/* Audio element — deferred preload so media doesn't block images */}
+      {/* Audio element — smart background pre-buffering */}
       <audio
         ref={audioRef}
         src={AUDIO_SRC}
         loop
-        preload="none"
+        preload="metadata"
         onTimeUpdate={onTimeUpdate}
         onLoadedMetadata={onLoadedMetadata}
         onPlay={() => setIsPlaying(true)}
@@ -872,7 +883,7 @@ function App() {
 
           {/* Text overlay on the cream deckled card tucked into the pocket */}
           <div className="absolute top-[43%] inset-x-[12%] h-[31%] flex flex-col items-center justify-center text-center px-3 z-10">
-            <p className="font-cormorant italic font-semibold text-[20px] sm:text-[17px] text-ink/75 leading-snug tracking-wide mb-2.5">
+            <p className="font-cormorant italic font-semibold text-[17px] sm:text-[13px] text-ink/75 leading-snug tracking-wide mb-2.5">
               We will be delighted by your presence as we celebrate our wedding.
             </p>
           </div>
