@@ -1,0 +1,26 @@
+/* App.css — only animation keyframes that can't be done inline */
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes petalDrop {
+  from { opacity: 0; transform: translateY(-12px) rotate(-8deg); }
+  to   { opacity: 1; transform: translateY(0) rotate(0deg); }
+}
+@keyframes progressPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+.animate-float-in  { animation: floatIn  0.9s ease both; }
+.animate-petal     { animation: petalDrop 1.1s ease 0.4s both; }
+.animate-progress  { animation: progressPulse 2s ease infinite; }
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-page-fade {
+  animation: pageFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
